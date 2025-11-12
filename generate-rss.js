@@ -1,4 +1,3 @@
-// generate-rss.js
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -16,23 +15,35 @@ const feedURL = "https://bonikbarta.com/feed.xml";
 
 async function fetchAll() {
   let allItems = [];
+
   for (let url of apiURLs) {
     try {
-      const response = await fetch(url);
-      const data = await response.json();
+      const res = await fetch(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } });
+      const text = await res.text();
+
+      // Skip responses that are HTML instead of JSON
+      if (!text.trim().startsWith('{')) {
+        console.error("⚠️ Non-JSON response from", url);
+        continue;
+      }
+
+      const data = JSON.parse(text);
+
       const items = (data.posts && Array.isArray(data.posts))
         ? data.posts
         : ((data.content && data.content.items) || []);
+
       allItems = allItems.concat(items);
+
     } catch (err) {
-      console.error("Failed to load from", url, err);
+      console.error("❌ Failed to load from", url, err);
     }
   }
 
-  // Sort by latest publish date
+  // Sort newest first
   allItems.sort((a, b) => new Date(b.first_published_at) - new Date(a.first_published_at));
 
-  // ✅ Remove duplicates by link (url_path)
+  // Remove duplicate links
   const seenLinks = new Set();
   const uniqueItems = [];
   for (const item of allItems) {
@@ -55,53 +66,47 @@ function generateGUID(item) {
 function generateRSS(items) {
   const nowUTC = new Date().toUTCString();
 
-  let rss = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n' +
-    '  <channel>\n' +
-    '    <title>Bonikbarta Combined Feed</title>\n' +
-    `    <link>${siteURL}</link>\n` +
-    `    <atom:link href="${feedURL}" rel="self" type="application/rss+xml"/>\n` +
-    '    <description>Latest articles from Bonikbarta</description>\n' +
-    '    <language>bn</language>\n' +
-    `    <lastBuildDate>${nowUTC}</lastBuildDate>\n` +
-    '    <generator>GitHub Actions RSS Generator</generator>\n';
+  let rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bonikbarta Combined Feed</title>
+    <link>${siteURL}</link>
+    <atom:link href="${feedURL}" rel="self" type="application/rss+xml"/>
+    <description>Latest articles from Bonikbarta</description>
+    <language>bn</language>
+    <lastBuildDate>${nowUTC}</lastBuildDate>
+    <generator>GitHub Actions RSS Generator</generator>
+`;
 
   items.forEach(item => {
     const fullLink = (item.url_path || "/").replace(/^\/home/, "");
     const articleUrl = baseURL + fullLink;
-    const pubDate = item.first_published_at
-      ? new Date(item.first_published_at).toUTCString()
-      : nowUTC;
-    const title = (item.title || "No title")
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
+    const pubDate = item.first_published_at ? new Date(item.first_published_at).toUTCString() : nowUTC;
+    const title = (item.title || "No title").replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     const description = item.excerpt || item.summary || "No description available";
     const guid = generateGUID(item);
 
-    rss +=
-      '    <item>\n' +
-      `      <title>${title}</title>\n` +
-      `      <link>${articleUrl}</link>\n` +
-      `      <description><![CDATA[${description}]]></description>\n` +
-      `      <pubDate>${pubDate}</pubDate>\n` +
-      `      <guid isPermaLink="false">${guid}</guid>\n` +
-      '    </item>\n';
+    rss += `    <item>
+      <title>${title}</title>
+      <link>${articleUrl}</link>
+      <description><![CDATA[${description}]]></description>
+      <pubDate>${pubDate}</pubDate>
+      <guid isPermaLink="false">${guid}</guid>
+    </item>
+`;
   });
 
   rss += '  </channel>\n</rss>';
   return rss;
 }
 
-async function main() {
+(async () => {
   try {
     const items = await fetchAll();
-    const rssContent = generateRSS(items.slice(0, 50));
+    const rssContent = generateRSS(items.slice(0, 50)); // latest 50 articles
     fs.writeFileSync('feed.xml', rssContent, { encoding: 'utf8' });
-    console.log('✅ RSS feed generated successfully with ' + items.length + ' unique links.');
+    console.log(`✅ RSS feed generated with ${items.length} unique links.`);
   } catch (error) {
     console.error('❌ Error generating RSS:', error);
   }
-}
-
-main();
+})();
