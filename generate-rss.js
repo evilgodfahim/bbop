@@ -135,7 +135,7 @@ async function fetchJSONWithPlaywright(page, url) {
 
   collected.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-  const rssXML = generateRSS(collected.slice(0, 50)); // latest 50 articles
+  const rssXML = generateRSS(collected.slice(0, 500)); // latest 50 articles
   fs.writeFileSync("feed.xml", rssXML, "utf8");
 
   console.log(`✅ RSS feed updated with ${collected.slice(0, 50).length} items (${collected.length} total unique items collected).`);
