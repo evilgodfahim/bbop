@@ -1,9 +1,9 @@
-name: Update RSS Feed and HTML
+name: Update Bonikbarta RSS Feed
 
 on:
-  schedule:
-    - cron: '0 * * * *' # every hour
   workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *' # every hour, adjust as needed
 
 jobs:
   update-feed:
@@ -16,33 +16,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js and install dependencies
-      - name: Setup Node.js and install dependencies
+      # 2. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # 3. Cache Playwright browsers
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      # 4. Install dependencies
+      - name: Install dependencies
         run: |
-          npm install
+          npm install playwright node-fetch
           npx playwright install --with-deps
 
-      # 3. Generate RSS Feed
+      # 5. Generate RSS Feed
       - name: Generate RSS Feed
         run: node generate-rss.js || exit 1
 
-      # 4. Generate PolitePol HTML
-      - name: Generate PolitePol HTML
-        run: node generate-plain-index.js || exit 1
-
-      # 5. Configure Git identity
+      # 6. Configure Git
       - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      # 6. Commit and push changes safely
-      - name: Commit and push changes
+      # 7. Add, commit, and push changes safely
+      - name: Commit and push feed.xml
         run: |
-          git add feed.xml index-plain.html
+          git add feed.xml
           bash -c 'if git diff --staged --quiet; then
             echo "✅ No changes to commit"
           else
-            git commit -m "🔄 Update RSS feed and HTML - $(date +%Y-%m-%d\ %H:%M:%S)"
+            git commit -m "🔄 Update Bonikbarta RSS feed - $(date +%Y-%m-%d\ %H:%M:%S)"
             git push
           fi'
