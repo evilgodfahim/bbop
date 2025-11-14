@@ -22,21 +22,27 @@ jobs:
         with:
           node-version: '18'
 
-      # 3. Generate RSS Feed
+      # 3. Install dependencies
+      - name: Install npm dependencies and Playwright
+        run: |
+          npm ci || npm install
+          npx playwright install --with-deps
+
+      # 4. Generate RSS Feed
       - name: Generate RSS Feed
         run: node generate-rss.js || exit 1
 
-      # 4. Generate PolitePol HTML
+      # 5. Generate PolitePol HTML
       - name: Generate PolitePol HTML
         run: node generate-plain-index.js || exit 1
 
-      # 5. Configure Git identity
+      # 6. Configure Git identity
       - name: Configure Git
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
 
-      # 6. Commit and push changes safely
+      # 7. Commit and push changes safely
       - name: Commit and push changes
         run: |
           git add feed.xml index-plain.html
