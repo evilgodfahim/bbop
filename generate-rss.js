@@ -1,5 +1,6 @@
 const fs = require('fs');
 const crypto = require('crypto');
+const { chromium } = require('playwright'); // npm i playwright
 
 const apiURLs = [
   "https://bonikbarta.com/api/post-filters/73?root_path=00000000010000000001",
@@ -10,59 +11,29 @@ const apiURLs = [
 ];
 
 const baseURL = "https://bonikbarta.com";
-const siteURL = "https://bonikbarta.com";
-const feedURL = "https://bonikbarta.com/feed.xml";
+const siteURL = baseURL;
+const feedURL = `${baseURL}/feed.xml`;
 
-async function fetchAll() {
-  let allItems = [];
-
-  for (let url of apiURLs) {
-    try {
-      const res = await fetch(url, { headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0' } });
-      const text = await res.text();
-
-      // Skip responses that are HTML instead of JSON
-      if (!text.trim().startsWith('{')) {
-        console.error("⚠️ Non-JSON response from", url);
-        continue;
-      }
-
-      const data = JSON.parse(text);
-
-      const items = (data.posts && Array.isArray(data.posts))
-        ? data.posts
-        : ((data.content && data.content.items) || []);
-
-      allItems = allItems.concat(items);
-
-    } catch (err) {
-      console.error("❌ Failed to load from", url, err);
-    }
-  }
-
-  // Sort newest first
-  allItems.sort((a, b) => new Date(b.first_published_at) - new Date(a.first_published_at));
-
-  // Remove duplicate links
-  const seenLinks = new Set();
-  const uniqueItems = [];
-  for (const item of allItems) {
-    const fullLink = (item.url_path || "").replace(/^\/home/, "");
-    const normalizedLink = baseURL + fullLink;
-    if (!seenLinks.has(normalizedLink)) {
-      seenLinks.add(normalizedLink);
-      uniqueItems.push(item);
-    }
-  }
-
-  return uniqueItems;
-}
-
+// Generate GUID
 function generateGUID(item) {
-  const str = (item.title || '') + (item.excerpt || '') + (item.first_published_at || '');
+  const str = (item.title || '') + (item.summary || item.excerpt || '') + (item.first_published_at || '');
   return crypto.createHash('md5').update(str).digest('hex');
 }
 
+// Convert API post to RSS item
+function postToRSSItem(post) {
+  const title = post.title || "No title";
+  const link = baseURL + (post.url_path || "/");
+  const description = post.summary || post.sub_title || post.excerpt || "No description";
+  const pubDate = post.first_published_at
+    ? new Date(post.first_published_at).toUTCString()
+    : new Date().toUTCString();
+  const guid = generateGUID(post);
+
+  return { title, link, description, pubDate, guid };
+}
+
+// Generate RSS XML
 function generateRSS(items) {
   const nowUTC = new Date().toUTCString();
 
@@ -79,19 +50,12 @@ function generateRSS(items) {
 `;
 
   items.forEach(item => {
-    const fullLink = (item.url_path || "/").replace(/^\/home/, "");
-    const articleUrl = baseURL + fullLink;
-    const pubDate = item.first_published_at ? new Date(item.first_published_at).toUTCString() : nowUTC;
-    const title = (item.title || "No title").replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const description = item.excerpt || item.summary || "No description available";
-    const guid = generateGUID(item);
-
     rss += `    <item>
-      <title>${title}</title>
-      <link>${articleUrl}</link>
-      <description><![CDATA[${description}]]></description>
-      <pubDate>${pubDate}</pubDate>
-      <guid isPermaLink="false">${guid}</guid>
+      <title><![CDATA[${item.title}]]></title>
+      <link>${item.link}</link>
+      <description><![CDATA[${item.description}]]></description>
+      <pubDate>${item.pubDate}</pubDate>
+      <guid isPermaLink="false">${item.guid}</guid>
     </item>
 `;
   });
@@ -100,13 +64,60 @@ function generateRSS(items) {
   return rss;
 }
 
-(async () => {
+// Fetch JSON via Playwright to avoid Cloudflare/HTML issues
+async function fetchJSONWithPlaywright(page, url) {
   try {
-    const items = await fetchAll();
-    const rssContent = generateRSS(items.slice(0, 50)); // latest 50 articles
-    fs.writeFileSync('feed.xml', rssContent, { encoding: 'utf8' });
-    console.log(`✅ RSS feed generated with ${items.length} unique links.`);
-  } catch (error) {
-    console.error('❌ Error generating RSS:', error);
+    const response = await page.evaluate(async (u) => {
+      const res = await fetch(u, {
+        headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' }
+      });
+      return await res.text();
+    }, url);
+
+    if (!response.trim().startsWith('{')) {
+      console.error("⚠️ Non-JSON response from", url);
+      return null;
+    }
+
+    return JSON.parse(response);
+  } catch (err) {
+    console.error("❌ Failed to fetch:", url, err);
+    return null;
   }
+}
+
+// Main
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({
+    userAgent:
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/127 Safari/537.36"
+  });
+  const page = await context.newPage();
+
+  const collected = [];
+  const seenLinks = new Set();
+
+  for (const url of apiURLs) {
+    console.log("Fetching:", url);
+    const data = await fetchJSONWithPlaywright(page, url);
+    if (!data || !Array.isArray(data.posts)) continue;
+
+    for (const post of data.posts) {
+      const rssItem = postToRSSItem(post);
+      if (!seenLinks.has(rssItem.link)) {
+        seenLinks.add(rssItem.link);
+        collected.push(rssItem);
+      }
+    }
+  }
+
+  await browser.close();
+
+  collected.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+
+  const rssXML = generateRSS(collected.slice(0, 50)); // latest 50
+  fs.writeFileSync("feed.xml", rssXML, "utf8");
+
+  console.log(`✅ RSS feed updated with ${collected.length} unique items.`);
 })();
