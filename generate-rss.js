@@ -16,7 +16,7 @@ const feedURL = `${baseURL}/feed.xml`;
 
 // Generate GUID
 function generateGUID(item) {
-  const str = (item.title || '') + (item.summary || item.excerpt || '') + (item.first_published_at || '');
+  const str = (item.title || '') + (item.summary || '') + (item.first_published_at || '');
   return crypto.createHash('md5').update(str).digest('hex');
 }
 
@@ -24,7 +24,7 @@ function generateGUID(item) {
 function postToRSSItem(post) {
   const title = post.title || "No title";
   const link = baseURL + (post.url_path || "/");
-  const description = post.summary || post.sub_title || post.excerpt || "No description";
+  const description = post.summary || post.sub_title || "No description";
   const pubDate = post.first_published_at
     ? new Date(post.first_published_at).toUTCString()
     : new Date().toUTCString();
@@ -64,13 +64,11 @@ function generateRSS(items) {
   return rss;
 }
 
-// Fetch JSON via Playwright to avoid Cloudflare/HTML issues
+// Fetch JSON via Playwright
 async function fetchJSONWithPlaywright(page, url) {
   try {
     const response = await page.evaluate(async (u) => {
-      const res = await fetch(u, {
-        headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' }
-      });
+      const res = await fetch(u, { headers: { Accept: 'application/json', 'User-Agent': 'Mozilla/5.0' } });
       return await res.text();
     }, url);
 
