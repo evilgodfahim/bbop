@@ -6,8 +6,22 @@
     <atom:link href="https://bonikbarta.com/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Latest articles from Bonikbarta</description>
     <language>bn</language>
-    <lastBuildDate>Sun, 31 May 2026 08:18:20 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 31 May 2026 11:02:55 GMT</lastBuildDate>
     <generator>GitHub Actions RSS Generator</generator>
+    <item>
+      <title><![CDATA[প্রাথমিকের জন্য ক্যাচমেন্টভিত্তিক ভর্তি পদ্ধতি চালু করা যেতে পারে]]></title>
+      <link>https://bonikbarta.com/editorial/lwr39B4ufXMrBI7P/</link>
+      <description><![CDATA[No description]]></description>
+      <pubDate>Sun, 31 May 2026 10:59:48 GMT</pubDate>
+      <guid isPermaLink="false">305caa0938a51933d3300c579750e327</guid>
+    </item>
+    <item>
+      <title><![CDATA[কেবল বাজেট বরাদ্দ বাড়িয়ে ও পাঠ্যক্রম পরিবর্তন করে শিক্ষার মান বাড়বে না]]></title>
+      <link>https://bonikbarta.com/editorial/7AVjbaYa8KyL79v6/</link>
+      <description><![CDATA[No description]]></description>
+      <pubDate>Sun, 31 May 2026 10:43:55 GMT</pubDate>
+      <guid isPermaLink="false">77df9320b33e3c6e51a332319c473a85</guid>
+    </item>
     <item>
       <title><![CDATA[বাংলাদেশের শিল্পায়ন ও অর্থনৈতিক উন্নয়নে চীন থেকে যা শেখার আছে]]></title>
       <link>https://bonikbarta.com/editorial/ne3ydEN3yiuUhizC/</link>
@@ -58,20 +72,6 @@
       <guid isPermaLink="false">a9349c06b5ba479b6b5a4fbc9180e98b</guid>
     </item>
     <item>
-      <title><![CDATA[কৃষি খাতের জন্য আসন্ন বাজেট কেমন হওয়া চাই]]></title>
-      <link>https://bonikbarta.com/editorial/JARTtkzFg9wpuZmm/</link>
-      <description><![CDATA[আসন্ন ২০২৬-২৭ অর্থবছরের প্রস্তাবিত মোট বাজেট প্রাক্কলন (অনুমিত ৯ লাখ ৩০ হাজার কোটি টাকা) বিবেচনায় কৃষি খাতের সামগ্রিক বরাদ্দ মোট বাজেটের ৯ দশমিক ৫ শতাংশে (প্রায় ৮৮ হাজার ৩৫০ কোটি টাকা) উন্নীত করার দাবি করেছে বাংলাদেশ কৃষি অর্থনীতিবিদ সমিতি।]]></description>
-      <pubDate>Mon, 25 May 2026 21:00:00 GMT</pubDate>
-      <guid isPermaLink="false">3f8a7167ceeff03188eeb0c315ffd1dc</guid>
-    </item>
-    <item>
-      <title><![CDATA[সমন্বিত উদ্যোগে পশুর বর্জ্য যথাযথ ব্যবস্থাপনায় নিয়ে আসতে হবে]]></title>
-      <link>https://bonikbarta.com/editorial/zHd3I610YkLS8ptc/</link>
-      <description><![CDATA[ত্যাগের মহিমায় ধর্মীয় মর্যাদা ও ভাবগাম্ভীর্যের সঙ্গে সারা বিশ্বে ঈদুল আজহা উদযাপন করা হয়। বাংলাদেশেও বছরে দুটো ঈদ ব্যাপক আড়ম্বরে পালন করা হয়।]]></description>
-      <pubDate>Mon, 25 May 2026 20:00:00 GMT</pubDate>
-      <guid isPermaLink="false">b74ff7a5f034c47978d31ef346b196a3</guid>
-    </item>
-    <item>
       <title><![CDATA[ব্যাংকক প্রমাণ করেছে আধুনিক মেগাসিটিতেও জলপথ টিকিয়ে রাখা সম্ভব]]></title>
       <link>https://bonikbarta.com/editorial/v7VxMhUSmpy069cf/</link>
       <description><![CDATA[থাইল্যান্ডের মানুষ খালকে তাদের ভাষায় বলে ‘খলং’। এ খলংয়ের ইতিহাস ব্যাংকক শহরের চেয়েও পুরনো। ১৫৪০-এর দশকে পর্তুগিজ অভিযাত্রী ফের্নাও মেন্দেস পিন্টো শ্যামদেশ বা স্থানীয় ভাষায় সাইয়ামের তৎকালীন রাজধানী আয়ুথ্যার খালের নেটওয়ার্ক দেখে এ শহরের নাম দিয়েছিলেন প্রাচ্যের ভেনিস। বর্তমানে ব্যাংককজুড়ে অন্তত ১ হাজার ৬০০ খাল আছে।]]></description>
@@ -98,20 +98,6 @@
       <description><![CDATA[দেশের উচ্চ জনসংখ্যার ঘনত্ব এবং সীমিত ভূমি সম্পদের কারণে সংরক্ষিত এলাকা বৃদ্ধি করা সহজ নয়। তবে এটি অসম্ভবও নয় যদি আমরা ‘সংরক্ষণ বনাম উন্নয়ন’ এ দ্বৈততা থেকে বের হয়ে ‘সমন্বিত ব্যবস্থাপনা’ ধারণাকে গ্রহণ করতে পারি। যেমন কমিউনিটি-ভিত্তিক বন ব্যবস্থাপনা, সহাবস্থানমূলক সংরক্ষণ এবং প্রকৃতি-নির্ভর-সমাধান বাস্তবায়নের মাধ্যমে একই সঙ্গে জীববৈচিত্র্য রক্ষা ও মানুষের জীবিকা নিশ্চিত করা সম্ভব।]]></description>
       <pubDate>Fri, 22 May 2026 06:57:00 GMT</pubDate>
       <guid isPermaLink="false">ba8293783e2c2f9c427b44ef35185821</guid>
-    </item>
-    <item>
-      <title><![CDATA[তরুণদের মনোসামাজিক চ্যালেঞ্জ মোকাবেলায় বিশ্ববিদ্যালয়ে সমন্বিত উদ্যোগ অপরিহার্য]]></title>
-      <link>https://bonikbarta.com/editorial/cc2T306weVrbp0Bn/</link>
-      <description><![CDATA[No description]]></description>
-      <pubDate>Thu, 21 May 2026 10:47:00 GMT</pubDate>
-      <guid isPermaLink="false">8155f71d2b2cd57b3adba4be39a974d8</guid>
-    </item>
-    <item>
-      <title><![CDATA[হাওরে মাশরুম চাষ সম্ভাবনাময় বিকল্প হতে পারে]]></title>
-      <link>https://bonikbarta.com/editorial/uhLayytYKow1KHRF/</link>
-      <description><![CDATA[ধানের খড় মাশরুম চাষের উৎকৃষ্ট সাবস্ট্রেট এবং এর চাষ পদ্ধতিও সহজ। তাই ধানের খড়ে মাশরুম চাষ প্রযুক্তি কৃষকের কাছে পৌঁছে দেয়া সময়ের দাবি। এক কেজি ধানের খড় থেকে খুব সহজেই এক কেজি মাশরুম উৎপাদন করা যায়। আর এক কেজি মাশরুমের বাজারদর অন্তত ২৫০ টাকা, যা চাষীদের অর্থনৈতিক নিরাপত্তা নিশ্চিত করতে পারে।]]></description>
-      <pubDate>Thu, 21 May 2026 06:20:20 GMT</pubDate>
-      <guid isPermaLink="false">1a625e16d04b6e880fb23656869e8c47</guid>
     </item>
     <item>
       <title><![CDATA[চাপের মুখেও মাথানত করতেন না সোলায়মান খান মজলিস]]></title>
